@@ -217,7 +217,7 @@ grafzahl.corpus <- function(x, y = NULL, model_name = "xlm-roberta-base",
     if (detect_conda()) {
       .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = verbose)
     } else if (detect_pyenv()) {
-      reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = !use_conda)))
+      reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = TRUE)))
     } else {
       stop("No conda or python virtual environment found. Run `setup_grafzahl` to bootstrap one.")
     }
@@ -285,7 +285,7 @@ predict.grafzahl <- function(object, newdata, cuda = detect_cuda(), return_raw =
   if (detect_conda()) {
     .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = verbose)
   } else if (detect_pyenv()) {
-    reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = !use_conda)))
+    reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = TRUE)))
   } else {
     stop("No conda or python virtual environment found. Run `setup_grafzahl` to bootstrap one.")
   }
