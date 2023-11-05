@@ -214,7 +214,13 @@ grafzahl.corpus <- function(x, y = NULL, model_name = "xlm-roberta-base",
     }
     best_model_dir <- file.path(output_dir, "best_model")
     cache_dir <- .generate_random_dir(9999, 300000)
-    .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = verbose)
+    if (detect_conda()) {
+      .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = verbose)
+    } else if (detect_pyenv()) {
+      reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = !use_conda)))
+    } else {
+      stop("No conda or python virtual environment found. Run `setup_grafzahl` to bootstrap one.")
+    }
     reticulate::source_python(system.file("python", "st.py", package = "grafzahl"))
     py_train(data = input_data, num_labels = num_labels, output_dir = output_dir, best_model_dir = best_model_dir, cache_dir = cache_dir, model_type = model_type, model_name = model_name, num_train_epochs = num_train_epochs, train_size = train_size, manual_seed = manual_seed, regression = regression, verbose = verbose)
     if (cleanup && dir.exists(file.path("./", "runs"))) {
@@ -267,22 +273,28 @@ grafzahl.character <- function(x, y = NULL, model_name = "xlmroberta",
 #' @method predict grafzahl
 #' @export
 predict.grafzahl <- function(object, newdata, cuda = detect_cuda(), return_raw = FALSE, ...) {
-    if (missing(newdata)) {
-        if (!is.data.frame(object$input_data)) {
-            stop("`newdata` is missing. And no input data in the `grafzahl` object.", call. = FALSE)
-        }
-        newdata <- object$input_data$text
+  if (missing(newdata)) {
+    if (!is.data.frame(object$input_data)) {
+      stop("`newdata` is missing. And no input data in the `grafzahl` object.", call. = FALSE)
     }
-    if (Sys.getenv("KILL_SWITCH") == "KILL") {
-        return(NA)
-    }
-    .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = FALSE)
-    reticulate::source_python(system.file("python", "st.py", package = "grafzahl"))
-    res <- py_predict(to_predict = newdata, model_type = object$model_type, output_dir = object$output_dir, return_raw = return_raw, use_cuda = cuda)
-    if (return_raw || is.null(object$levels)) {
-        return(res)
-    }
-    return(object$levels[res + 1])
+    newdata <- object$input_data$text
+  }
+  if (Sys.getenv("KILL_SWITCH") == "KILL") {
+    return(NA)
+  }
+  if (detect_conda()) {
+    .initialize_conda(envname = .gen_envname(cuda = cuda), verbose = verbose)
+  } else if (detect_pyenv()) {
+    reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = .gen_envname(cuda = cuda, py = !use_conda)))
+  } else {
+    stop("No conda or python virtual environment found. Run `setup_grafzahl` to bootstrap one.")
+  }
+  reticulate::source_python(system.file("python", "st.py", package = "grafzahl"))
+  res <- py_predict(to_predict = newdata, model_type = object$model_type, output_dir = object$output_dir, return_raw = return_raw, use_cuda = cuda)
+  if (return_raw || is.null(object$levels)) {
+    return(res)
+  }
+  return(object$levels[res + 1])
 }
 
 #' @method print grafzahl
