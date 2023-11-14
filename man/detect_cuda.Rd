@@ -2,10 +2,13 @@
 % Please edit documentation in R/setup.R
 \name{detect_conda}
 \alias{detect_conda}
+\alias{detect_pyenv}
 \alias{detect_cuda}
 \title{Detecting Miniconda And Cuda}
 \usage{
 detect_conda()
+
+detect_pyenv()
 
 detect_cuda()
 }

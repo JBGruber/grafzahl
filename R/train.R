@@ -120,6 +120,7 @@
 #' @param cleanup logical, if `TRUE`, the `runs` directory generated will be removed when the training is done
 #' @param model_type a string indicating model_type of the input model. If `NULL`, it will be inferred from `model_name`. It can only be one of the following: "albert", "bert", "bertweet", "bigbird", "camembert", "deberta", "distilbert", "electra", "flaubert", "herbert", "layoutlm", "layoutlmv2", "longformer", "mpnet", "mobilebert", "rembert", "roberta", "squeezebert", "squeezebert", "xlm", "xlmroberta", "xlnet". This will be lowercased and hyphens will be removed, e.g. "XLM-RoBERTa" will be normalized to "xlmroberta".
 #' @param manual_seed numeric, random seed
+#' @param ignore_mismatched_sizes can be passed to torch to ignore the error 
 #' @param verbose logical, if `TRUE`, debug messages will be displayed
 #' @param ... paramters pass to [grafzahl()]
 #' @return a `grafzahl` S3 object with the following items
@@ -161,7 +162,8 @@
 grafzahl <- function(x, y = NULL, model_name = "xlm-roberta-base",
                      regression = FALSE, output_dir, cuda = detect_cuda(), num_train_epochs = 4,
                      train_size = 0.8, args = NULL, cleanup = TRUE, model_type = NULL,
-                     manual_seed = floor(runif(1, min = 1, max = 721831)), verbose = TRUE) {
+                     manual_seed = floor(runif(1, min = 1, max = 721831)), 
+                     ignore_mismatched_sizes = FALSE, verbose = TRUE) {
     UseMethod("grafzahl")
 }
 
@@ -170,7 +172,8 @@ grafzahl <- function(x, y = NULL, model_name = "xlm-roberta-base",
 grafzahl.default <- function(x, y = NULL, model_name = "xlm-roberta-base",
                              regression = FALSE, output_dir, cuda = detect_cuda(), num_train_epochs = 4,
                              train_size = 0.8, args = NULL, cleanup = TRUE, model_type = NULL,
-                             manual_seed = floor(runif(1, min = 1, max = 721831)), verbose = TRUE) {
+                             manual_seed = floor(runif(1, min = 1, max = 721831)), 
+                             ignore_mismatched_sizes = FALSE, verbose = TRUE) {
     return(invisible(NULL))
 }
 
@@ -179,7 +182,8 @@ grafzahl.default <- function(x, y = NULL, model_name = "xlm-roberta-base",
 grafzahl.corpus <- function(x, y = NULL, model_name = "xlm-roberta-base",
                             regression = FALSE, output_dir, cuda = detect_cuda(), num_train_epochs = 4,
                             train_size = 0.8, args = NULL, cleanup = TRUE, model_type = NULL,
-                            manual_seed = floor(runif(1, min = 1, max = 721831)), verbose = TRUE) {
+                            manual_seed = floor(runif(1, min = 1, max = 721831)), 
+                            ignore_mismatched_sizes = FALSE, verbose = TRUE) {
     if (quanteda::ndoc(x) <= 1) {
         stop("Too few documents.")
     }
@@ -222,7 +226,7 @@ grafzahl.corpus <- function(x, y = NULL, model_name = "xlm-roberta-base",
       stop("No conda or python virtual environment found. Run `setup_grafzahl` to bootstrap one.")
     }
     reticulate::source_python(system.file("python", "st.py", package = "grafzahl"))
-    py_train(data = input_data, num_labels = num_labels, output_dir = output_dir, best_model_dir = best_model_dir, cache_dir = cache_dir, model_type = model_type, model_name = model_name, num_train_epochs = num_train_epochs, train_size = train_size, manual_seed = manual_seed, regression = regression, verbose = verbose)
+    py_train(data = input_data, num_labels = num_labels, output_dir = output_dir, best_model_dir = best_model_dir, cache_dir = cache_dir, model_type = model_type, model_name = model_name, num_train_epochs = num_train_epochs, train_size = train_size, manual_seed = manual_seed, regression = regression, ignore_mismatched_sizes = ignore_mismatched_sizes, verbose = verbose)
     if (cleanup && dir.exists(file.path("./", "runs"))) {
         unlink(file.path("./", "runs"), recursive = TRUE, force = TRUE)
     }
@@ -248,7 +252,8 @@ textmodel_transformer <- function(...) {
 grafzahl.character <- function(x, y = NULL, model_name = "xlmroberta",
                             regression = FALSE, output_dir, cuda = detect_cuda(), num_train_epochs = 4,
                             train_size = 0.8, args = NULL, cleanup = TRUE, model_type = NULL,
-                            manual_seed = floor(runif(1, min = 1, max = 721831)), verbose = TRUE) {
+                            manual_seed = floor(runif(1, min = 1, max = 721831)), 
+                            ignore_mismatched_sizes = FALSE, verbose = TRUE) {
     if (is.null(y)) {
         stop("`y` cannot be NULL when x is a character vector.", call. = FALSE)
     }

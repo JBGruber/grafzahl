@@ -21,6 +21,7 @@ grafzahl(
   cleanup = TRUE,
   model_type = NULL,
   manual_seed = floor(runif(1, min = 1, max = 721831)),
+  ignore_mismatched_sizes = FALSE,
   verbose = TRUE
 )
 
@@ -37,6 +38,7 @@ grafzahl(
   cleanup = TRUE,
   model_type = NULL,
   manual_seed = floor(runif(1, min = 1, max = 721831)),
+  ignore_mismatched_sizes = FALSE,
   verbose = TRUE
 )
 
@@ -53,6 +55,7 @@ grafzahl(
   cleanup = TRUE,
   model_type = NULL,
   manual_seed = floor(runif(1, min = 1, max = 721831)),
+  ignore_mismatched_sizes = FALSE,
   verbose = TRUE
 )
 
@@ -71,6 +74,7 @@ textmodel_transformer(...)
   cleanup = TRUE,
   model_type = NULL,
   manual_seed = floor(runif(1, min = 1, max = 721831)),
+  ignore_mismatched_sizes = FALSE,
   verbose = TRUE
 )
 }
@@ -98,6 +102,8 @@ textmodel_transformer(...)
 \item{model_type}{a string indicating model_type of the input model. If \code{NULL}, it will be inferred from \code{model_name}. It can only be one of the following: "albert", "bert", "bertweet", "bigbird", "camembert", "deberta", "distilbert", "electra", "flaubert", "herbert", "layoutlm", "layoutlmv2", "longformer", "mpnet", "mobilebert", "rembert", "roberta", "squeezebert", "squeezebert", "xlm", "xlmroberta", "xlnet". This will be lowercased and hyphens will be removed, e.g. "XLM-RoBERTa" will be normalized to "xlmroberta".}
 
 \item{manual_seed}{numeric, random seed}
+
+\item{ignore_mismatched_sizes}{can be passed to torch to ignore the error}
 
 \item{verbose}{logical, if \code{TRUE}, debug messages will be displayed}
 
