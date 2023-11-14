@@ -108,12 +108,14 @@ detect_cuda <- function() {
     if (Sys.getenv("KILL_SWITCH") == "KILL") {
         return(NA)
     }
-    envnames <- grep("^grafzahl_condaenv", .list_condaenvs(), value = TRUE)
+    envnames <- character()
+    if (.have_conda()) envnames <- grep("^grafzahl_condaenv", .list_condaenvs(), value = TRUE)
     if (length(envnames) == 0) {
       envnames <- grep("^r-grafzahl", reticulate::virtualenv_list(), value = TRUE)
       if (length(envnames) == 0) {
         stop("No conda environment found. Run `setup_grafzahl` to bootstrap one.")
       }
+      reticulate::use_virtualenv(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = envnames))
     } else {
       if (grepl("_cuda", envnames, fixed = TRUE)) {
         envname <- "grafzahl_condaenv_cuda"
@@ -229,6 +231,10 @@ setup_grafzahl_pyenv <- function(envname, cuda, force, cuda_version) {
       if (permission) {
         if (utils::packageVersion("reticulate") < "1.19")
           stop("Your version of reticulate is too old for this action. Please update")
+        
+        if (Sys.which("git") == "") {}
+          stop("Installation of this pythin version needs git. If you don't know how to get it, look here:",
+               "https://happygitwithr.com/install-git.html")
         python <- reticulate::install_python()
         reticulate::virtualenv_create(Sys.getenv("GRAFZAHL_PYTHON_PATH", unset = envname),
                                       python = python)

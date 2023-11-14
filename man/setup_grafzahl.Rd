@@ -4,7 +4,12 @@
 \alias{setup_grafzahl}
 \title{Setup grafzahl}
 \usage{
-setup_grafzahl(cuda = FALSE, force = FALSE, cuda_version = "11.3")
+setup_grafzahl(
+  cuda = FALSE,
+  force = FALSE,
+  cuda_version = "11.3",
+  use_conda = TRUE
+)
 }
 \arguments{
 \item{cuda}{logical, if \code{TRUE}, indicate whether a CUDA-enabled environment is wanted.}
