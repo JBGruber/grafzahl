@@ -262,7 +262,8 @@ grafzahl.character <- function(x, y = NULL, model_name = "xlmroberta",
     }
     grafzahl(x = quanteda::corpus(x), y = y, model_type = model_type, model_name = model_name, regression = regression,
              output_dir = output_dir, cuda = cuda, num_train_epochs = num_train_epochs, train_size = train_size,
-             args = args, cleanup = cleanup, manual_seed = manual_seed, verbose = verbose)
+             args = args, cleanup = cleanup, manual_seed = manual_seed, ignore_mismatched_sizes = ignore_mismatched_sizes,
+             verbose = verbose)
 }
 
 
